@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>SBWRecipeTool</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.left {
+  flex: 2;
+  padding: 20px;
+}
+
+.right {
+  flex: 1;
+  background: #1e1b4b;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 5px;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+  background: #312e81;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cell img { width: 64px; }
+
+.item {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.item.selected {
+  background: #7c3aed;
+  outline: 2px solid #a78bfa;
+}
+
+.item-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;   /* 縦横比を維持 */
+  image-rendering: pixelated;
+}
+
+.item img { width: 24px; }
+
+button {
+  margin: 4px;
+  padding: 6px;
+  background: #7c3aed;
+  border: none;
+  color: white;
+}
+
+input, select {
+  display: block;
+  margin: 5px 0;
+  background: rgb(26, 30, 51);
+  color: white;
+  border: none;
+  padding: 5px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+}
+
+.itemlist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#output {
+    background: rgb(26, 30, 51);
+}
+
+.inline-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-input input {
+  width: 120px;
+}
+
+/* 名前が折り返してるのを防ぐ */
+.sbw-list span {
+  white-space: nowrap;
+}
+
+/* 右側 */
+.sbw-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0; /* 崩れ防止 */
+}
+
+.sbw-list div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  background: #0f172a;
+  border-radius: 6px;
+}
+
+/* 数字入力 */
+/* SBWの右側だけ例外 */
+.sbw-controls input {
+  display: inline-block !important;
+  width: 60px;
+  margin: 0; /* 余計な余白消す */
+}
+
+/* 削除ボタン */
+.sbw-controls button {
+  background: #7c3aed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left">
+
+<h2>SBWRecipeTool</h2>
+
+<!-- 言語 -->
+<select onchange="changeLang(this.value)">
+  <option value="ja">日本語</option>
+  <option value="en">English</option>
+  <option value="ru">Русский</option>
+</select>
+
+<div class="card">
+  <label id="labelRecipeType"></label>
+  <select id="recipeType">
+    <option id="optionShaped" value="shaped"></option>
+    <option id="optionSBW" value="sbw"></option>
+  </select>
+  <p id="modeHint"></p>
+</div>
+
+<div id="gridCard" class="card">
+  <label id="labelGrid"></label>
+  <div id="grid" class="grid"></div>
+</div>
+
+<div id="normalUI" class="card">
+  <label id="labelResult"></label>
+  <div class="inline-input">
+    <label>ModId:</label>
+    <input id="resultNamespace" value="ashvehicle">
+  </div>
+  <div class="inline-input">
+    <label>ItemId:</label>
+    <input id="resultId">
+  </div>
+  <label id="labelCount"></label>
+  <input id="count" type="number" value="1">
+</div>
+
+<div id="sbwUI" class="card" style="display:none;">
+  <label id="labelMaterials"></label>
+  <div id="sbwList" class="sbw-list"></div>
+  <label id="labelCategory"></label>
+  <select id="sbwCategory">
+    <option value="aircraft">aircraft</option>
+    <option value="water">water</option>
+    <option value="land">land</option>
+    <option value="misc">misc</option>
+    </select>
+  <label id="labelEntity"></label>
+  <div class="inline-input">
+    <label>ModId:</label>
+    <input id="sbwResultNamespace" value="ashvehicle">
+  </div>
+  <div class="inline-input">
+    <label>ItemId:</label>
+    <input id="sbwResultId">
+  </div>
+</div>
+
+<div class="card">
+  <button id="btnGenerate" onclick="generate()"></button>
+  <button id="btnClear" onclick="clearAll()"></button>
+  <button id="btnSave" onclick="downloadCurrent()"></button>
+</div>
+
+<pre id="output"></pre>
+
+</div>
+
+<div class="right">
+  <h3 id="itemListTitle"></h3>
+  <div id="itemList"></div>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
